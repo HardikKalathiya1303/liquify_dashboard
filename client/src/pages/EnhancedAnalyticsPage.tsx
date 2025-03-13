@@ -1448,7 +1448,9 @@ export default function EnhancedAnalyticsPage() {
                                     <span>Current Savings</span>
                                     <span>₹4,50,000 / ₹15,00,000</span>
                                   </div>
-                                  <Progress value={30} className="h-2 bg-gray-700" indicatorClassName="bg-blue-500" />
+                                  <div className="h-2 bg-gray-700 rounded-full overflow-hidden">
+                                    <div className="h-full bg-blue-500 rounded-full" style={{ width: '30%' }}></div>
+                                  </div>
                                 </div>
                                 
                                 <div>
