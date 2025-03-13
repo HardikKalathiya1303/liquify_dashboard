@@ -158,9 +158,12 @@ export default function LoanApplicationPage() {
 
   const onSubmit = (data: LoanApplicationFormData) => {
     // Validate if there's sufficient value in the mutual fund
-    const selectedFund = mutualFunds.find((fund: any) => fund.id === Number(data.mutualFundId));
+    const selectedFund = Array.isArray(mutualFunds) 
+      ? mutualFunds.find((fund: any) => fund.id === Number(data.mutualFundId))
+      : null;
+      
     if (selectedFund) {
-      const maxLoanAmount = Number(selectedFund.currentValue) * 0.8; // 80% of fund value
+      const maxLoanAmount = Number(selectedFund.totalValue) * 0.8; // 80% of fund value
       if (Number(data.loanAmount) > maxLoanAmount) {
         toast({
           title: "Validation Error",
@@ -222,9 +225,9 @@ export default function LoanApplicationPage() {
                         {...register("mutualFundId")}
                       >
                         <option value="">Select Mutual Fund</option>
-                        {mutualFunds.map((fund: any) => (
+                        {Array.isArray(mutualFunds) && mutualFunds.map((fund: any) => (
                           <option key={fund.id} value={fund.id}>
-                            {fund.name} - {fund.units} units (₹{formatAmountWithCommas(Number(fund.currentValue))})
+                            {fund.fundName} - {fund.units} units (₹{formatAmountWithCommas(Number(fund.totalValue))})
                           </option>
                         ))}
                       </select>
@@ -328,7 +331,7 @@ export default function LoanApplicationPage() {
                         {...register("bankAccountId")}
                       >
                         <option value="">Select Bank Account</option>
-                        {bankAccounts.map((account: any) => (
+                        {Array.isArray(bankAccounts) && bankAccounts.map((account: any) => (
                           <option key={account.id} value={account.id}>
                             {account.bankName} - {account.accountNumber} {account.isDefault ? '(Default)' : ''}
                           </option>
@@ -337,7 +340,7 @@ export default function LoanApplicationPage() {
                       {errors.bankAccountId && (
                         <p className="text-red-500 text-xs mt-1">{errors.bankAccountId.message}</p>
                       )}
-                      {bankAccounts?.length === 0 && (
+                      {(!Array.isArray(bankAccounts) || bankAccounts.length === 0) && (
                         <p className="text-yellow-500 text-xs mt-1">Please add a bank account in your profile first</p>
                       )}
                     </div>
@@ -345,7 +348,7 @@ export default function LoanApplicationPage() {
                     <Button 
                       type="submit" 
                       className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                      disabled={applyLoanMutation.isPending || bankAccounts?.length === 0}
+                      disabled={applyLoanMutation.isPending || !Array.isArray(bankAccounts) || bankAccounts.length === 0}
                     >
                       {applyLoanMutation.isPending ? (
                         <>
