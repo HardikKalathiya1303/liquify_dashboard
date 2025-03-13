@@ -138,6 +138,9 @@ export const loanApplicationSchema = z.object({
   loanType: z.string(),
   tenure: z.number(),
   interestRate: z.number(),
+  interestType: z.enum(["fixed", "floating"]).optional(),
+  bankAccountId: z.number().optional(),
+  purpose: z.string().optional(),
 });
 
 export type LoanApplication = z.infer<typeof loanApplicationSchema>;

@@ -254,7 +254,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/loans/apply", isAuthenticated, async (req, res, next) => {
     try {
       const userId = (req.user as any).id;
-      const validatedData = loanApplicationSchema.parse(req.body);
+      
+      // Add additional fields needed for creating a loan
+      const formData = {
+        ...req.body,
+        userId
+      };
+      
+      // Validate the loan application data
+      const validatedData = loanApplicationSchema.parse(formData);
       
       // Check if mutual fund exists and belongs to user
       const mutualFund = await storage.getMutualFund(validatedData.mutualFundId);
@@ -266,16 +274,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Unauthorized access to this mutual fund" });
       }
       
+      // Check if bank account exists and belongs to user
+      if (validatedData.bankAccountId) {
+        const bankAccounts = await storage.getBankAccounts(userId);
+        const bankAccountExists = bankAccounts.some(account => account.id === validatedData.bankAccountId);
+        if (!bankAccountExists) {
+          return res.status(404).json({ message: "Bank account not found or doesn't belong to user" });
+        }
+      }
+      
+      // Check if loan amount is within limits (up to 80% of mutual fund value)
+      const fundValue = Number(mutualFund.currentValue || mutualFund.totalValue);
+      const maxLoanAmount = fundValue * 0.8;
+      const requestedAmount = Number(validatedData.loanAmount);
+      
+      if (requestedAmount > maxLoanAmount) {
+        return res.status(400).json({ 
+          message: `Loan amount exceeds maximum allowed (80% of your mutual fund value). Maximum: ${maxLoanAmount.toFixed(2)}` 
+        });
+      }
+      
       // Generate unique loan number
-      const loanNumber = `LN${nanoid(6).toUpperCase()}`;
+      const loanNumber = `LQ${nanoid(6).toUpperCase()}`;
       
       // Calculate EMI amount
-      const loanAmount = Number(validatedData.loanAmount);
       const interestRate = validatedData.interestRate;
       const tenure = validatedData.tenure;
       
       const monthlyInterestRate = interestRate / 1200; // Monthly interest rate
-      const emiAmount = loanAmount * monthlyInterestRate * Math.pow(1 + monthlyInterestRate, tenure) / 
+      const emiAmount = requestedAmount * monthlyInterestRate * Math.pow(1 + monthlyInterestRate, tenure) / 
                         (Math.pow(1 + monthlyInterestRate, tenure) - 1);
       
       // Create loan with pending status
@@ -283,7 +310,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         userId,
         loanNumber,
         loanType: validatedData.loanType,
-        loanAmount: loanAmount.toString(),
+        loanAmount: requestedAmount.toString(),
         interestRate: interestRate.toString(),
         emiAmount: Math.round(emiAmount).toString(),
         tenure,
@@ -292,6 +319,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
         remainingEmis: tenure,
         totalEmis: tenure
       });
+      
+      // Create a "loan_application" transaction record for tracking
+      const transactionDescription = `Loan application against ${mutualFund.name}`;
+      await storage.createTransaction({
+        userId,
+        loanId: newLoan.id,
+        transactionType: "loan_application",
+        amount: requestedAmount.toString(),
+        description: transactionDescription
+      });
+      
+      // For demo purposes: Auto-approve the loan after 5 seconds in development
+      if (process.env.NODE_ENV !== 'production') {
+        setTimeout(async () => {
+          try {
+            // Update loan status to active
+            await storage.updateLoanStatus(newLoan.id, "active");
+            
+            // Set next EMI date (1 month from now)
+            const nextEmiDate = new Date();
+            nextEmiDate.setMonth(nextEmiDate.getMonth() + 1);
+            await storage.updateNextEmiDate(newLoan.id, nextEmiDate);
+            
+            // Create a "loan_approval" transaction
+            await storage.createTransaction({
+              userId,
+              loanId: newLoan.id,
+              transactionType: "loan_disbursal",
+              amount: requestedAmount.toString(),
+              description: `Loan ${loanNumber} approved and disbursed`
+            });
+            
+            console.log(`Demo: Auto-approved loan ${loanNumber}`);
+          } catch (err) {
+            console.error('Error in auto-approval:', err);
+          }
+        }, 5000);
+      }
       
       res.status(201).json(newLoan);
     } catch (error) {

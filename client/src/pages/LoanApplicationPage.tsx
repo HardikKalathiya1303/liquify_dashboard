@@ -100,32 +100,78 @@ export default function LoanApplicationPage() {
   // Apply for loan mutation
   const applyLoanMutation = useMutation({
     mutationFn: async (data: LoanApplicationFormData) => {
-      const response = await apiRequest('POST', '/api/loans/apply', {
-        ...data,
-        interestRate: interestRate.toString(),
-        emiAmount: emiAmount.toString(),
-      });
+      // Convert string values to appropriate types for API
+      const formattedData = {
+        mutualFundId: Number(data.mutualFundId),
+        loanAmount: data.loanAmount,
+        loanType: data.purpose || 'general',
+        tenure: Number(data.loanTenure),
+        interestRate: interestRate,
+        interestType: data.interestType,
+        bankAccountId: Number(data.bankAccountId)
+      };
+      
+      const response = await apiRequest('POST', '/api/loans/apply', formattedData);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to submit loan application');
+      }
       return response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast({
         title: "Loan Application Submitted",
-        description: "Your loan application has been submitted successfully. We will review it shortly.",
+        description: `Your loan application #${data.loanNumber} has been submitted successfully. We will review it shortly.`,
         variant: "default"
       });
+      
+      // Create a success analytics event
+      try {
+        // This would track the loan application event in a real analytics system
+        console.log('Loan Application Submitted', {
+          loanAmount,
+          loanTenure,
+          interestRate,
+          emiAmount
+        });
+      } catch (err) {
+        console.error('Analytics error', err);
+      }
+      
+      // Invalidate relevant queries
       queryClient.invalidateQueries({ queryKey: ['/api/loans'] });
-      setLocation("/loans");
+      queryClient.invalidateQueries({ queryKey: ['/api/dashboard'] });
+      
+      // Redirect to the loans page
+      setTimeout(() => {
+        setLocation("/loans");
+      }, 1500);
     },
     onError: (error: any) => {
       toast({
         title: "Application Failed",
-        description: error.message || "Failed to submit loan application",
+        description: error.message || "Failed to submit loan application. Please try again.",
         variant: "destructive"
       });
     }
   });
 
   const onSubmit = (data: LoanApplicationFormData) => {
+    // Validate if there's sufficient value in the mutual fund
+    const selectedFund = mutualFunds.find((fund: any) => fund.id === Number(data.mutualFundId));
+    if (selectedFund) {
+      const maxLoanAmount = Number(selectedFund.currentValue) * 0.8; // 80% of fund value
+      if (Number(data.loanAmount) > maxLoanAmount) {
+        toast({
+          title: "Validation Error",
+          description: `Maximum loan amount for this fund is ₹${formatAmountWithCommas(Math.floor(maxLoanAmount))}`,
+          variant: "destructive"
+        });
+        return;
+      }
+    }
+    
+    // All validations passed, submit the application
     applyLoanMutation.mutate(data);
   };
 

@@ -62,7 +62,7 @@ export default function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
       <aside 
         className={`w-64 bg-gray-900 border-r border-gray-800 transition-all duration-300 ease-in-out 
           ${isOpen ? 'translate-x-0' : '-translate-x-full'} 
-          md:translate-x-0 h-screen fixed z-30 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900`}
+          md:translate-x-0 h-screen fixed md:sticky top-0 z-30 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900`}
       >
         <div className="flex flex-col h-full">
           <div className="p-5 border-b border-gray-800">
