@@ -1001,21 +1001,31 @@ export default function EnhancedAnalyticsPage() {
                                 <span>Equity</span>
                                 <span>{analyticsData.investmentAllocation.equity}%</span>
                               </div>
-                              <Progress value={analyticsData.investmentAllocation.equity} className="h-2 bg-gray-600" indicatorClassName="bg-blue-500" />
+                              <Progress value={analyticsData.investmentAllocation.equity} className="h-2 bg-gray-600" />
                             </div>
                             <div>
                               <div className="flex justify-between text-sm mb-1">
                                 <span>Debt</span>
                                 <span>{analyticsData.investmentAllocation.debt}%</span>
                               </div>
-                              <Progress value={analyticsData.investmentAllocation.debt} className="h-2 bg-gray-600" indicatorClassName="bg-purple-500" />
+                              <div className="h-2 bg-gray-600 rounded-full overflow-hidden">
+                                <div 
+                                  className="h-full bg-purple-500 rounded-full" 
+                                  style={{ width: `${analyticsData.investmentAllocation.debt}%` }}
+                                ></div>
+                              </div>
                             </div>
                             <div>
                               <div className="flex justify-between text-sm mb-1">
                                 <span>Cash</span>
                                 <span>{analyticsData.investmentAllocation.cash}%</span>
                               </div>
-                              <Progress value={analyticsData.investmentAllocation.cash} className="h-2 bg-gray-600" indicatorClassName="bg-green-500" />
+                              <div className="h-2 bg-gray-600 rounded-full overflow-hidden">
+                                <div 
+                                  className="h-full bg-green-500 rounded-full" 
+                                  style={{ width: `${analyticsData.investmentAllocation.cash}%` }}
+                                ></div>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -1145,16 +1155,16 @@ export default function EnhancedAnalyticsPage() {
                           </Badge>
                         </div>
                         <div className="text-2xl font-bold mb-1">{analyticsData.financialHealth.debtToIncomeRatio}%</div>
-                        <Progress 
-                          value={analyticsData.financialHealth.debtToIncomeRatio} 
-                          max={60} 
-                          className="h-2 bg-gray-600" 
-                          indicatorClassName={`${
-                            analyticsData.financialHealth.debtToIncomeRatio < 30 ? 'bg-green-500' : 
-                            analyticsData.financialHealth.debtToIncomeRatio < 40 ? 'bg-yellow-500' : 
-                            'bg-red-500'
-                          }`} 
-                        />
+                        <div className="h-2 bg-gray-600 rounded-full overflow-hidden">
+                          <div 
+                            className={`h-full rounded-full ${
+                              analyticsData.financialHealth.debtToIncomeRatio < 30 ? 'bg-green-500' : 
+                              analyticsData.financialHealth.debtToIncomeRatio < 40 ? 'bg-yellow-500' : 
+                              'bg-red-500'
+                            }`} 
+                            style={{ width: `${Math.min(analyticsData.financialHealth.debtToIncomeRatio / 60 * 100, 100)}%` }}
+                          ></div>
+                        </div>
                       </div>
                       
                       <div className="bg-gray-700 rounded-lg p-4">
@@ -1165,16 +1175,16 @@ export default function EnhancedAnalyticsPage() {
                           </Badge>
                         </div>
                         <div className="text-2xl font-bold mb-1">{analyticsData.financialHealth.creditUtilization}%</div>
-                        <Progress 
-                          value={analyticsData.financialHealth.creditUtilization} 
-                          max={100} 
-                          className="h-2 bg-gray-600" 
-                          indicatorClassName={`${
-                            analyticsData.financialHealth.creditUtilization < 30 ? 'bg-green-500' : 
-                            analyticsData.financialHealth.creditUtilization < 50 ? 'bg-yellow-500' : 
-                            'bg-red-500'
-                          }`} 
-                        />
+                        <div className="h-2 bg-gray-600 rounded-full overflow-hidden">
+                          <div 
+                            className={`h-full rounded-full ${
+                              analyticsData.financialHealth.creditUtilization < 30 ? 'bg-green-500' : 
+                              analyticsData.financialHealth.creditUtilization < 50 ? 'bg-yellow-500' : 
+                              'bg-red-500'
+                            }`} 
+                            style={{ width: `${analyticsData.financialHealth.creditUtilization}%` }}
+                          ></div>
+                        </div>
                       </div>
                       
                       <div className="bg-gray-700 rounded-lg p-4">
@@ -1183,12 +1193,12 @@ export default function EnhancedAnalyticsPage() {
                           <Badge className="bg-green-600">Healthy</Badge>
                         </div>
                         <div className="text-2xl font-bold mb-1">22%</div>
-                        <Progress 
-                          value={22} 
-                          max={50} 
-                          className="h-2 bg-gray-600" 
-                          indicatorClassName="bg-green-500" 
-                        />
+                        <div className="h-2 bg-gray-600 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-green-500 rounded-full" 
+                            style={{ width: `${22 / 50 * 100}%` }}
+                          ></div>
+                        </div>
                       </div>
                     </div>
                   </CardContent>

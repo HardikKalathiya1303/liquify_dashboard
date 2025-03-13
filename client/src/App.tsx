@@ -10,7 +10,7 @@ import LoansPage from "@/pages/LoansPage";
 import LoanApplicationPage from "@/pages/LoanApplicationPage";
 import TransactionsPage from "@/pages/TransactionsPage";
 import ProfilePage from "@/pages/ProfilePage";
-import AnalyticsPage from "@/pages/AnalyticsPage";
+import AnalyticsPage from "@/pages/EnhancedAnalyticsPage";
 import { ThemeProvider } from "@/components/ui/theme-provider";
 import { AuthProvider, useAuth } from "@/context/AuthContext";
 import { useEffect } from "react";
