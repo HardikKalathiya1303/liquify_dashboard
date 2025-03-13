@@ -66,11 +66,17 @@ export default function Sidebar({ isOpen, toggleSidebar }: SidebarProps) {
       >
         <div className="flex flex-col h-full">
           <div className="p-5 border-b border-gray-800">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
-                <i className="ri-money-dollar-circle-line text-white text-xl"></i>
-              </div>
-              <span className="text-xl font-bold text-white tracking-tight">Liquify</span>
+            <div className="flex items-center">
+              <Link href="/" className="flex items-center">
+                <img 
+                  src="/images/liquify-logo.png" 
+                  alt="Liquify Logo" 
+                  className="h-10"
+                  onClick={() => {
+                    if (isMobile) toggleSidebar();
+                  }}
+                />
+              </Link>
             </div>
           </div>
           

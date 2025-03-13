@@ -52,10 +52,10 @@ export default function Header({ toggleSidebar, title = "Financial Dashboard" }:
   };
 
   return (
-    <header className="bg-gray-900 border-b border-gray-800 py-3 px-4 md:px-6 flex justify-between items-center sticky top-0 z-20">
+    <header className="bg-gradient-to-r from-gray-900 to-blue-900 border-b border-gray-800 py-3 px-4 md:px-6 flex justify-between items-center sticky top-0 z-20">
       <div className="flex items-center">
         <button 
-          className="mr-4 text-gray-400 hover:text-white transition-colors p-2 rounded-lg hover:bg-gray-800 md:hidden"
+          className="mr-4 text-gray-300 hover:text-white transition-colors p-2 rounded-lg hover:bg-blue-800/30 md:hidden"
           onClick={toggleSidebar}
           aria-label="Toggle sidebar"
         >
@@ -63,7 +63,7 @@ export default function Header({ toggleSidebar, title = "Financial Dashboard" }:
         </button>
         <div>
           <h1 className="text-lg font-bold text-white mb-0.5">{title}</h1>
-          <p className="text-xs text-gray-400 hidden md:block">{formatDate()}</p>
+          <p className="text-xs text-blue-200 hidden md:block">{formatDate()}</p>
         </div>
       </div>
       
@@ -79,7 +79,7 @@ export default function Header({ toggleSidebar, title = "Financial Dashboard" }:
         
         <div className="relative" ref={notificationRef}>
           <button 
-            className="relative p-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"
+            className="relative p-2 rounded-lg text-blue-300 hover:text-white hover:bg-blue-800/40 transition-colors"
             onClick={() => setNotificationOpen(!notificationOpen)}
             aria-label="Notifications"
           >
@@ -88,8 +88,8 @@ export default function Header({ toggleSidebar, title = "Financial Dashboard" }:
           </button>
           
           {notificationOpen && (
-            <div className="absolute right-0 mt-2 w-80 rounded-lg shadow-lg py-2 bg-gray-800 border border-gray-700 ring-1 ring-black ring-opacity-5 z-50">
-              <div className="px-4 py-2 border-b border-gray-700">
+            <div className="absolute right-0 mt-2 w-80 rounded-lg shadow-lg py-2 bg-gray-900 border border-blue-900 ring-1 ring-blue-500/20 ring-opacity-5 z-50">
+              <div className="px-4 py-2 border-b border-blue-900/60">
                 <div className="flex justify-between items-center">
                   <h3 className="text-sm font-semibold text-white">Notifications</h3>
                   <span className="text-xs bg-blue-600 text-white px-1.5 py-0.5 rounded-md">3 new</span>
@@ -143,7 +143,7 @@ export default function Header({ toggleSidebar, title = "Financial Dashboard" }:
         </div>
         
         <button 
-          className="p-2 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 transition-colors"
+          className="p-2 rounded-lg text-blue-300 hover:text-white hover:bg-blue-800/40 transition-colors"
           onClick={toggleTheme}
           aria-label="Toggle theme"
         >
@@ -153,7 +153,7 @@ export default function Header({ toggleSidebar, title = "Financial Dashboard" }:
         {user && (
           <div className="relative" ref={dropdownRef}>
             <button 
-              className="flex items-center bg-gray-800 hover:bg-gray-750 rounded-lg px-2 py-1.5 text-gray-300 hover:text-white transition-colors"
+              className="flex items-center bg-blue-900/40 hover:bg-blue-800/60 rounded-lg px-2 py-1.5 text-blue-100 hover:text-white transition-colors"
               onClick={() => setDropdownOpen(!dropdownOpen)}
             >
               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-medium mr-2">
@@ -164,41 +164,41 @@ export default function Header({ toggleSidebar, title = "Financial Dashboard" }:
             </button>
             
             {dropdownOpen && (
-              <div className="absolute right-0 mt-2 w-56 rounded-lg shadow-lg py-2 bg-gray-800 border border-gray-700 ring-1 ring-black ring-opacity-5 z-50">
-                <div className="px-4 py-2 border-b border-gray-700">
+              <div className="absolute right-0 mt-2 w-56 rounded-lg shadow-lg py-2 bg-gray-900 border border-blue-900 ring-1 ring-blue-500/20 ring-opacity-5 z-50">
+                <div className="px-4 py-2 border-b border-blue-900/60">
                   <p className="text-sm font-medium text-white">{user?.fullName}</p>
-                  <p className="text-xs text-gray-400">{user?.email}</p>
+                  <p className="text-xs text-blue-300">{user?.email}</p>
                 </div>
                 <button 
-                  className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-750 flex items-center"
+                  className="w-full text-left px-4 py-2 text-sm text-blue-100 hover:bg-blue-900/30 flex items-center"
                   onClick={() => {
                     setDropdownOpen(false);
                     setLocation("/profile");
                   }}
                 >
-                  <i className="ri-user-settings-line mr-2 text-gray-400"></i> My Profile
+                  <i className="ri-user-settings-line mr-2 text-blue-400"></i> My Profile
                 </button>
                 <button 
-                  className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-750 flex items-center"
+                  className="w-full text-left px-4 py-2 text-sm text-blue-100 hover:bg-blue-900/30 flex items-center"
                   onClick={() => {
                     setDropdownOpen(false);
                     setLocation("/settings");
                   }}
                 >
-                  <i className="ri-settings-3-line mr-2 text-gray-400"></i> Settings
+                  <i className="ri-settings-3-line mr-2 text-blue-400"></i> Settings
                 </button>
                 <button 
-                  className="w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-750 flex items-center"
+                  className="w-full text-left px-4 py-2 text-sm text-blue-100 hover:bg-blue-900/30 flex items-center"
                   onClick={() => {
                     setDropdownOpen(false);
                     setLocation("/loans/apply");
                   }}
                 >
-                  <i className="ri-bank-card-line mr-2 text-gray-400"></i> Apply for Loan
+                  <i className="ri-bank-card-line mr-2 text-blue-400"></i> Apply for Loan
                 </button>
-                <div className="border-t border-gray-700 my-1"></div>
+                <div className="border-t border-blue-900/60 my-1"></div>
                 <button 
-                  className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-gray-750 flex items-center"
+                  className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-blue-900/30 flex items-center"
                   onClick={handleLogout}
                 >
                   <i className="ri-logout-box-r-line mr-2"></i> Sign out
